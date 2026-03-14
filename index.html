@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Votazione Ballo</title>
+<link rel="stylesheet" href="style.css">
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "INSERISCI",
+  authDomain: "INSERISCI",
+  projectId: "INSERISCI",
+  storageBucket: "INSERISCI",
+  messagingSenderId: "INSERISCI",
+  appId: "INSERISCI"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let selectedDancers = [];
+let selectedStyle = null;
+
+function voteDancer(id){
+
+ if(selectedDancers.includes(id)){
+   selectedDancers = selectedDancers.filter(d=>d!==id)
+   return
+ }
+
+ if(selectedDancers.length >=3){
+   alert("Puoi votare massimo 3 ballerini")
+   return
+ }
+
+ selectedDancers.push(id)
+}
+
+function voteStyle(style){
+ selectedStyle = style
+}
+
+window.submitVote = async function(){
+
+ if(selectedDancers.length ===0){
+   alert("Seleziona almeno un ballerino")
+   return
+ }
+
+ if(!selectedStyle){
+   alert("Seleziona uno stile")
+   return
+ }
+
+ await addDoc(collection(db,"votes"),{
+   dancers:selectedDancers,
+   style:selectedStyle,
+   time:Date.now()
+ })
+
+ alert("Voto inviato!")
+ location.reload()
+}
+
+</script>
+
+</head>
+
+<body>
+
+<h1>Vota i ballerini</h1>
+
+<div class="grid">
+
+<div class="card" onclick="voteDancer(1)">
+<img src="images/dancer1.jpg">
+<p>Nome Cognome</p>
+</div>
+
+<div class="card" onclick="voteDancer(2)">
+<img src="images/dancer2.jpg">
+<p>Nome Cognome</p>
+</div>
+
+</div>
+
+<h2>Vota lo stile</h2>
+
+<div class="styles">
+
+<div onclick="voteStyle('classico')">Classico</div>
+<div onclick="voteStyle('modern')">Modern</div>
+<div onclick="voteStyle('latino')">Latino Americano</div>
+<div onclick="voteStyle('heels')">Heels</div>
+<div onclick="voteStyle('hiphop')">Hip Hop</div>
+
+</div>
+
+<button onclick="submitVote()">Invia voto</button>
+
+</body>
+</html>

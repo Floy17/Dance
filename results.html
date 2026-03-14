@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Risultati</title>
+</head>
+
+<body>
+
+<h1>Risultati Live</h1>
+
+<div id="results"></div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "INSERISCI",
+  authDomain: "INSERISCI",
+  projectId: "INSERISCI",
+  storageBucket: "INSERISCI",
+  messagingSenderId: "INSERISCI",
+  appId: "INSERISCI"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let dancerVotes={}
+let styleVotes={}
+
+const snapshot = await getDocs(collection(db,"votes"))
+
+snapshot.forEach(doc=>{
+
+const data = doc.data()
+
+data.dancers.forEach(d=>{
+ dancerVotes[d]=(dancerVotes[d]||0)+1
+})
+
+styleVotes[data.style]=(styleVotes[data.style]||0)+1
+
+})
+
+document.getElementById("results").innerHTML = JSON.stringify({
+ dancerVotes,
+ styleVotes
+})
+
+</script>
+
+</body>
+</html>
